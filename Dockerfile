@@ -11,4 +11,4 @@ RUN apk add --no-cache \
       python
 RUN npm install --production
 
-CMD npm start
+CMD node index.js
