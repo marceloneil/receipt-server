@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Example dapp</title>
+</head>
+
+<body>
+  <form id="cart">
+    <div id="items"></div>
+    <input type="submit" name="submit">
+  </form>
+
+  <script src="https://rawgit.com/ethereum/web3.js/1.0/dist/web3.min.js"></script>
+  <script>
+    var items = {};
+    var itemIds = [];
+
+    function init() {
+      // Checks Web3 support
+      if (typeof web3 !== 'undefined' && typeof Web3 !== 'undefined') {
+        // If there's a web3 library loaded, then make your own web3
+        web3 = new Web3(web3.currentProvider);
+      } else if (typeof Web3 !== 'undefined') {
+        // If there isn't then set a provider
+        web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+      } else if (typeof web3 == 'undefined') {
+        // Alert the user he is not in a web3 compatible browser
+        return;
+      }
+
+      web3.eth.getAccounts(function (error, result) {
+        if (error) { return console.log(error) }
+        web3.eth.defaultAccount = result[0];
+      })
+
+      loadJSON('items.json',
+        function (data) {
+          for (var i = 0; i < data.length; i++) {
+            var quantityId = data[i].id + '-quantity';
+            var priceId = data[i].id + '-price';
+            var totalId = data[i].id + '-total';
+
+            var div = document.createElement('div');
+            div.id = data[i].id;
+
+            var title = document.createTextNode(data[i].name + ': ');
+
+            var input = document.createElement('input');
+            input.type = 'number';
+            input.name = quantityId;
+            input.min = 0;
+            input.value = data[i].initial;
+
+            var text1 = document.createTextNode(' * ');
+
+            var price = document.createElement('span');
+            price.id = priceId;
+            price.innerHTML = data[i].price
+
+            var text2 = document.createTextNode(' eth = ');
+            
+            var total = document.createElement('span');
+            total.id = totalId;
+            total.innerHTML = data[i].initial * data[i].price;
+
+            var newline = document.createElement('br');
+
+            div.appendChild(title);
+            div.appendChild(input);
+            div.appendChild(text1);
+            div.appendChild(price);
+            div.appendChild(text2);
+            div.appendChild(total);
+            div.appendChild(newline);
+
+            document.getElementById('items').appendChild(div);
+
+            items[data[i].id] = {};
+            items[data[i].id].price = data[i].price;
+            items[data[i].id].quantityId = quantityId;
+            items[data[i].id].quantityElement = document.getElementById(quantityId);
+            items[data[i].id].priceElement = document.getElementById(priceId);
+            items[data[i].id].totalElement = document.getElementById(totalId);
+
+            itemIds.push(data[i].id);
+          }
+        },
+        function (xhr) {
+          console.error(xhr);
+        }
+      );
+    }
+
+    function handleCartChange(event) {
+      event.preventDefault();
+      var id = event.target.parentNode.id;
+      items[id].totalElement.innerHTML = items[id].price * event.target.value;
+    }
+
+    function handleCartSubmit(event) {
+      event.preventDefault();
+      var cost = 0;
+      for (var i = 0; i < itemIds.length; i++) {
+        var quantityId = items[itemIds[i]].quantityId;
+        var quantity = event.target[quantityId].value;
+        var price = items[itemIds[i]].price;
+        var total = quantity * price;
+        cost += total;
+      }
+      web3.eth.sendTransaction({
+        to: '0xc77a7317567753593c68D2600415e9f92D324871',
+        value: web3.utils.toWei(cost, 'ether')
+      }, function(error, transactionHash) {
+        if (error) { return console.log(error) }
+      });
+    }
+
+    // https://stackoverflow.com/a/18278346
+    function loadJSON(path, success, error) {
+      var xhr = new XMLHttpRequest();
+      xhr.onreadystatechange = function () {
+        if (xhr.readyState === XMLHttpRequest.DONE) {
+          if (xhr.status === 200) {
+            if (success)
+              success(JSON.parse(xhr.responseText));
+          } else {
+            if (error)
+              error(xhr);
+          }
+        }
+      };
+      xhr.open("GET", path, true);
+      xhr.send();
+    }
+
+    window.onload = init;
+    document.getElementById('cart').addEventListener("change", handleCartChange);
+    document.getElementById('cart').addEventListener("submit", handleCartSubmit);
+  </script>
+</body>
+
+</html>

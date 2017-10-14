@@ -1,9 +1,11 @@
 const Express = require('express')
 const Web3 = require('web3')
 const bodyParser = require('body-parser')
+const path = require('path')
 
 const app = Express()
 app.use(bodyParser.json())
+app.use(Express.static(path.join(__dirname, 'public')))
 
 const web3 = new Web3()
 web3.setProvider(new web3.providers.HttpProvider('http://geth:8545'))
