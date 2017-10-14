@@ -9,7 +9,7 @@ RUN apk add --no-cache \
       make \
       python
 
-RUN useradd build && \
+RUN adduser -S build && \
     chown -R build:build .
 USER build
 RUN npm install --production
