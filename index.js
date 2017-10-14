@@ -10,7 +10,7 @@ app.use(Express.static(path.join(__dirname, 'public')))
 const web3 = new Web3()
 web3.setProvider(new web3.providers.HttpProvider('http://geth:8545'))
 
-app.get('/receipt', function (req, res) {
+app.post('/receipt', function (req, res) {
   console.log(req.body)
   res.send(200)
 })
