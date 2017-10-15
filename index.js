@@ -12,25 +12,31 @@ web3.setProvider(new web3.providers.HttpProvider('http://geth:8545'))
 
 var accounts = {}
 
-setTimeout(() => {
-  web3.eth.getBlock('latest').then(data => {
-    for (let i = 0; i < data.number + 50; i++) {
-      web3.eth.getBlock(i, true).then(data => {
-        if (data.transactions) {
-          for (let j = 0; j < data.transactions.length; i++) {
-            var address = data.transactions[j].from
-            if (!accounts[address]) {
-              accounts[address] = []
-            }
-            accounts[address].push(data.transactions[j])
+function getBulkBlocks(j) {
+  setTimeout(function () {
+    web3.eth.getBlock(i, true).then(data => {
+      if (data.transactions) {
+        for (let j = 0; j < data.transactions.length; i++) {
+          var address = data.transactions[j].from
+          if (!accounts[address]) {
+            accounts[address] = []
           }
+          accounts[address].push(data.transactions[j])
         }
-      }).catch(error => {
-        console.log(error)
-      })
+      }
+    }).catch(error => {
+      console.log(error)
+    })
+    i++;
+    if (i < j) {
+      getBulkBlocks(j);
     }
-  }).catch(error => {
-    console.log(error)
+  }, 1000)
+}
+
+setTimeout(() => {
+  web3.eth.getBlockNumber().then(blockNumber => {
+    getBulkBlocks(number)
   })
 }, 10000)
 
