@@ -13,6 +13,8 @@ web3.setProvider(new web3.providers.HttpProvider('http://geth:8545'))
 for (let i = 0; i < 4000; i++) {
   web3.eth.getBlock(i).then(data => {
     console.log(data)
+  }).catch(error => {
+    return
   })
 }
 
