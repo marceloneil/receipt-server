@@ -23,6 +23,7 @@ setTimeout(() => {
   })
   for (let i = 0; i < latest + 50; i++) {
     web3.eth.getBlock(i, true).then(data => {
+      console.log(data.number)
       if (data.transactions) {
         console.log(data)
         for (let j = 0; j < data.transactions.length; i++) {
