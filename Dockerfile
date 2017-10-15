@@ -15,4 +15,5 @@ RUN addgroup -S build && \
 USER build
 RUN npm install --production
 
+USER root
 CMD node index.js
