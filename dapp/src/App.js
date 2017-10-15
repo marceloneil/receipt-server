@@ -75,6 +75,17 @@ class App extends Component {
     request.get('http://eth.1lab.me/tx').query({
         address: this.state.web3.eth.defaultAccount
       }).end(function(err, res){
+        let transactions = JSON.parse(res)
+        if (transactions) {
+          let hash = transactions[0].hash
+          let v = transactions[0].v
+          let r = transactions[0].r
+          let s = transactions[0].s
+          let publickey = ecrecover(hash, v, r, s)
+          console.log(publickey)
+        } else {
+          console.error('no transactions!')
+        }
         console.log(res)
     });
 

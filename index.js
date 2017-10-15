@@ -60,6 +60,6 @@ app.get('/tx', (req, res) => {
   }
 })
 
-app.listen(3005, () => {
+app.listen(3000, () => {
   console.log('Receipt server listening on port 3000!')
 })
