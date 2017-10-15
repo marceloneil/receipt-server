@@ -5,10 +5,15 @@ const path = require('path')
 
 const app = Express()
 app.use(bodyParser.json())
-app.use(Express.static(path.join(__dirname, 'public')))
+app.use(Express.static(path.join(__dirname, 'dapp/build')))
 
-const web3 = new Web3()
-web3.setProvider(new web3.providers.HttpProvider('http://geth:8545'))
+const web3 = new Web3('ws://geth.8546')
+
+for (let i = 0; i < 4000; i++) {
+  web3.eth.getBlock(i).then(data => {
+    console.log(data)
+  })
+}
 
 app.post('/receipt', function (req, res) {
   console.log(req.body)

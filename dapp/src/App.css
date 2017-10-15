@@ -1,0 +1,15 @@
+#cart {
+  margin-top: 10em;
+}
+
+.plus-minus {
+  float: right;
+}
+
+#total {
+  float: left;
+}
+
+#submit {
+  float: right;
+}

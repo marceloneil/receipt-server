@@ -1,0 +1,21 @@
+{
+  "name": "dapp",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "ethereumjs-util": "^5.1.2",
+    "react": "^16.0.0",
+    "react-dom": "^16.0.0",
+    "react-scripts": "1.0.14",
+    "semantic-ui-css": "^2.2.12",
+    "semantic-ui-react": "^0.74.2",
+    "superagent": "^3.6.3",
+    "web3": "^1.0.0-beta.23"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
+  }
+}
