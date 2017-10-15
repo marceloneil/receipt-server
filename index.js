@@ -36,15 +36,14 @@ setTimeout(() => {
   web3.eth.getBlockNumber().then(blockNumber => {
     getBulkBlocks(blockNumber)
   })
-  var subscription = web3.eth.subscribe('pendingTransactions')
-    .on("data", function (transaction) {
+  var subscription = web3.eth.subscribe('pendingTransactions', (error, transaction) => {
+    if (error) { return console.log(error) }
       var address = transaction.from
       if (!accounts[address]) {
         accounts[address] = []
       }
       accounts[address].push(transaction)
-    })
-    .on("error", console.log)
+  })
 }, 10000)
 
 app.post('/receipt', (req, res) => {
