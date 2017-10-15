@@ -8,8 +8,6 @@ const app = Express()
 app.use(bodyParser.json())
 app.use(Express.static(path.join(__dirname, 'dapp/build')))
 
-const web3 = new Web3('/opt/chain/geth.ipc', net)
-
 var accounts = {}
 
 let callback = (error, data) => {
@@ -27,23 +25,26 @@ let callback = (error, data) => {
   }
 }
 
-web3.eth.getBlockNumber().then(blockNumber => {
-  let batch = new web3.BatchRequest()
-  for (let i = 0; i < blockNumber; i++) {
-    batch.add(web3.eth.getBlock.request(i, true, callback))
-  }
-  batch.execute()
-})
-var subscription = web3.eth.subscribe('pendingTransactions', (error, transaction) => {
-  if (error) {
-    return console.log(error)
-  }
-  var address = transaction.from
-  if (!accounts[address]) {
-    accounts[address] = []
-  }
-  accounts[address].push(transaction)
-})
+setTimeout(() => {
+  const web3 = new Web3('/opt/chain/geth.ipc', net)
+  web3.eth.getBlockNumber().then(blockNumber => {
+    let batch = new web3.BatchRequest()
+    for (let i = 0; i < blockNumber; i++) {
+      batch.add(web3.eth.getBlock.request(i, true, callback))
+    }
+    batch.execute()
+  })
+  var subscription = web3.eth.subscribe('pendingTransactions', (error, transaction) => {
+    if (error) {
+      return console.log(error)
+    }
+    var address = transaction.from
+    if (!accounts[address]) {
+      accounts[address] = []
+    }
+    accounts[address].push(transaction)
+  })
+}, 5000)
 
 app.post('/receipt', (req, res) => {
   console.log(req.body)
