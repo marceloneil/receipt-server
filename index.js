@@ -10,13 +10,15 @@ app.use(Express.static(path.join(__dirname, 'dapp/build')))
 const web3 = new Web3()
 web3.setProvider(new web3.providers.HttpProvider('http://geth:8545'))
 
-for (let i = 1950; i < 1960; i++) {
-  web3.eth.getBlock(i).then(data => {
-    console.log(data)
-  }).catch(error => {
-    console.log(error)
-  })
-}
+setTimeout(() => {
+  for (let i = 1950; i < 1960; i++) {
+    web3.eth.getBlock(i).then(data => {
+      console.log(data)
+    }).catch(error => {
+      console.log(error)
+    })
+  }
+}, 10000)
 
 app.post('/receipt', function (req, res) {
   console.log(req.body)
