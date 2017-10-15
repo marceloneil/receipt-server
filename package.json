@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/marceloneil/receipt-server#readme",
   "dependencies": {
+    "cors": "^2.8.4",
     "debug": "^3.1.0",
     "express": "^4.16.2",
     "nan": "^2.7.0",

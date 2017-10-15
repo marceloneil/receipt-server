@@ -3,8 +3,10 @@ const Web3 = require('web3')
 const bodyParser = require('body-parser')
 const path = require('path')
 const net = require('net')
+const cors = require('cors')
 
 const app = Express()
+app.use(cors())
 app.use(bodyParser.json())
 app.use(Express.static(path.join(__dirname, 'dapp/build')))
 
