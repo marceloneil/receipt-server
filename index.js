@@ -10,14 +10,32 @@ app.use(Express.static(path.join(__dirname, 'dapp/build')))
 const web3 = new Web3()
 web3.setProvider(new web3.providers.HttpProvider('http://geth:8545'))
 
+var accounts = {}
+
 setTimeout(() => {
-  for (let i = 1950; i < 1960; i++) {
-    web3.eth.getBlock(i).then(data => {
-      console.log(data)
+  let latest
+  web3.eth.getBlock('latest').then(data => {
+    latest = data.number
+  }).catch(error => {
+    console.log(error)
+  })
+  for (let i = 0; i < latest + 50; i++) {
+    web3.eth.getBlock(i, true).then(data => {
+      if (data.transactions) {
+        console.log(data)
+        for (let j = 0; j < data.transactions.length; i++) {
+          var address = data.transactions[j].from
+          if (!accounts[address]) {
+            accounts[address] = []
+          }
+          accounts[address].push(data.transactions[j])
+        }
+      }
     }).catch(error => {
       console.log(error)
     })
   }
+  console.log(accounts)
 }, 10000)
 
 app.post('/receipt', function (req, res) {
