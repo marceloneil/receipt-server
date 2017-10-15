@@ -24,9 +24,7 @@ function getBulkBlocks(j) {
           accounts[address].push(data.transactions[j])
         }
       }
-    }).catch(error => {
-      console.log(error)
-    })
+    }).catch(console.log)
     i++;
     if (i < j) {
       getBulkBlocks(j);
@@ -36,8 +34,17 @@ function getBulkBlocks(j) {
 
 setTimeout(() => {
   web3.eth.getBlockNumber().then(blockNumber => {
-    getBulkBlocks(number)
+    getBulkBlocks(blockNumber)
   })
+  var subscription = web3.eth.subscribe('pendingTransactions')
+    .on("data", function (transaction) {
+      var address = transaction.from
+      if (!accounts[address]) {
+        accounts[address] = []
+      }
+      accounts[address].push(transaction)
+    })
+    .on("error", console.log)
 }, 10000)
 
 app.post('/receipt', (req, res) => {
