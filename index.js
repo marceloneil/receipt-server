@@ -2,49 +2,48 @@ const Express = require('express')
 const Web3 = require('web3')
 const bodyParser = require('body-parser')
 const path = require('path')
+const net = require('net')
 
 const app = Express()
 app.use(bodyParser.json())
 app.use(Express.static(path.join(__dirname, 'dapp/build')))
 
-const web3 = new Web3()
-web3.setProvider(new web3.providers.HttpProvider('http://geth:8545'))
+const web3 = new Web3('/opt/chain/geth.ipc', net)
 
 var accounts = {}
 
-function getBulkBlocks(j) {
-  setTimeout(function () {
-    web3.eth.getBlock(i, true).then(data => {
-      if (data.transactions) {
-        for (let j = 0; j < data.transactions.length; i++) {
-          var address = data.transactions[j].from
-          if (!accounts[address]) {
-            accounts[address] = []
-          }
-          accounts[address].push(data.transactions[j])
-        }
-      }
-    }).catch(console.log)
-    i++;
-    if (i < j) {
-      getBulkBlocks(j);
-    }
-  }, 1000)
-}
-
-setTimeout(() => {
-  web3.eth.getBlockNumber().then(blockNumber => {
-    getBulkBlocks(blockNumber)
-  })
-  var subscription = web3.eth.subscribe('pendingTransactions', (error, transaction) => {
-    if (error) { return console.log(error) }
-      var address = transaction.from
+let callback = (error, data) => {
+  if (error) {
+    return console.log(error)
+  }
+  if (data.transactions) {
+    for (let i = 0; i < data.transactions.length; i++) {
+      var address = data.transactions[i].from
       if (!accounts[address]) {
         accounts[address] = []
       }
-      accounts[address].push(transaction)
-  })
-}, 10000)
+      accounts[address].push(data.transactions[i])
+    }
+  }
+}
+
+web3.eth.getBlockNumber().then(blockNumber => {
+  let batch = new web3.BatchRequest()
+  for (let i = 0; i < blockNumber; i++) {
+    batch.add(web3.eth.getBlock.request(i, true, callback))
+  }
+  batch.execute()
+})
+var subscription = web3.eth.subscribe('pendingTransactions', (error, transaction) => {
+  if (error) {
+    return console.log(error)
+  }
+  var address = transaction.from
+  if (!accounts[address]) {
+    accounts[address] = []
+  }
+  accounts[address].push(transaction)
+})
 
 app.post('/receipt', (req, res) => {
   console.log(req.body)
@@ -61,6 +60,6 @@ app.get('/tx', (req, res) => {
   }
 })
 
-app.listen(3000, () => {
+app.listen(3005, () => {
   console.log('Receipt server listening on port 3000!')
 })
