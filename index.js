@@ -45,6 +45,8 @@ app.post('/receipt', (req, res) => {
 })
 
 app.get('/tx', (req, res) => {
+  console.log(accounts)
+  console.log(req.query)
   if (req.query.address && accounts[req.query.address]) {
     res.send(accounts[req.query.address])
   } else {
