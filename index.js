@@ -37,12 +37,19 @@ setTimeout(() => {
       console.log(error)
     })
   }
-  console.log(accounts)
 }, 10000)
 
-app.post('/receipt', function (req, res) {
+app.post('/receipt', (req, res) => {
   console.log(req.body)
   res.send(200)
+})
+
+app.get('/tx', (req, res) => {
+  if (req.query.address && accounts[req.query.address]) {
+    res.send(accounts[req.query.address])
+  } else {
+    res.send(404)
+  }
 })
 
 app.listen(3000, () => {
