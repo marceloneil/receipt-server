@@ -15,7 +15,9 @@ var accounts = {}
 setTimeout(() => {
   let latest
   web3.eth.getBlock('latest').then(data => {
+    console.log(data)
     latest = data.number
+    console.log(latest)
   }).catch(error => {
     console.log(error)
   })
